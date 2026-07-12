@@ -663,20 +663,6 @@ export default function Login() {
                   </p>
 
                   <div className="space-y-2">
-                    {/* Primary user email from metadata */}
-                    <button
-                      onClick={() => handleSelectGoogleAccount('Mithil Kokane', 'mithilrkokane@gmail.com')}
-                      className="flex items-center gap-3 w-full p-3 border border-slate-200 hover:border-slate-400 hover:bg-slate-50 rounded-lg text-left transition-colors"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
-                        MK
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-800">Mithil Kokane</p>
-                        <p className="text-xs text-slate-500">mithilrk14@gmail.com</p>
-                      </div>
-                    </button>
-
                     <button
                       onClick={() => handleSelectGoogleAccount('Alex Rivera', 'alex.rivera@gmail.com')}
                       className="flex items-center gap-3 w-full p-3 border border-slate-200 hover:border-slate-400 hover:bg-slate-50 rounded-lg text-left transition-colors"
