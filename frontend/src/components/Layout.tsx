@@ -1,50 +1,109 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import {
+  LayoutDashboard,
+  Truck,
+  Users,
+  MapPin,
+  Wrench,
+  Receipt,
+  BarChart3,
+  LogOut
+} from 'lucide-react'
 
 const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/vehicles', label: 'Vehicles' },
-  { to: '/drivers', label: 'Drivers' },
-  { to: '/trips', label: 'Trips' },
-  { to: '/maintenance', label: 'Maintenance' },
-  { to: '/expenses', label: 'Fuel & Expenses' },
-  { to: '/reports', label: 'Reports' },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/vehicles', label: 'Vehicles', icon: Truck },
+  { to: '/drivers', label: 'Drivers', icon: Users },
+  { to: '/trips', label: 'Trips', icon: MapPin },
+  { to: '/maintenance', label: 'Maintenance', icon: Wrench },
+  { to: '/expenses', label: 'Fuel & Expenses', icon: Receipt },
+  { to: '/reports', label: 'Reports', icon: BarChart3 },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth()
 
+  // Get initials for profile avatar
+  const getInitials = (name?: string) => {
+    if (!name) return 'U'
+    return name
+      .split(' ')
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase()
+  }
+
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-slate-200 bg-white">
-        <div className="border-b border-slate-200 px-4 py-4">
-          <p className="text-lg font-semibold text-slate-900">TransitOps</p>
+    <div className="flex min-h-screen bg-slate-50/50 text-slate-800">
+      {/* Sidebar Navigation */}
+      <aside className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white shadow-sm">
+        {/* Brand Header */}
+        <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 shadow-md shadow-indigo-600/10">
+            <Truck className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <p className="text-base font-extrabold tracking-tight text-slate-900">
+              Transit<span className="text-indigo-600">Ops</span>
+            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              Smart Compliance
+            </p>
+          </div>
         </div>
-        <nav className="flex-1 space-y-0.5 p-3">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `block rounded-md px-3 py-2 text-sm font-medium ${
-                  isActive ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+
+        {/* Navigation Items */}
+        <nav className="flex-1 space-y-1.5 px-4 py-6">
+          {navItems.map((item) => {
+            const IconComponent = item.icon
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                    isActive
+                      ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-600 pl-3'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                  }`
+                }
+              >
+                <IconComponent className="h-4 w-4 shrink-0" />
+                <span>{item.label}</span>
+              </NavLink>
+            )
+          })}
         </nav>
-        <div className="border-t border-slate-200 p-3">
-          <p className="truncate text-sm font-medium text-slate-900">{user?.name}</p>
-          <p className="truncate text-xs text-slate-500">{user?.role}</p>
-          <button onClick={logout} className="mt-2 text-xs font-medium text-slate-500 hover:text-slate-900">
-            Sign out
-          </button>
+
+        {/* User Card Profile Footer */}
+        <div className="border-t border-slate-100 p-4">
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 border border-slate-100">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+              {getInitials(user?.name)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-slate-900">{user?.name || 'Operator'}</p>
+              <p className="truncate text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                {user?.role || 'Guest'}
+              </p>
+            </div>
+            <button
+              onClick={logout}
+              title="Sign out"
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </aside>
-      <main className="flex-1 overflow-x-hidden p-6">{children}</main>
+
+      {/* Main Content Pane */}
+      <main className="flex-1 overflow-x-hidden p-8 lg:p-10">{children}</main>
     </div>
   )
 }
+
