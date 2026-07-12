@@ -77,18 +77,7 @@ Note there is no `core/llm.py` and no `LLM_*` module in this structure — that 
 deliberately removed, not just left unimplemented. If a generation layer is ever
 added back, it belongs in a separate service that consumes this API, not inside
 this repo.
-##PROJECT STRUCTURE
-RAG/
 
-├── knowledge_base/
-├── database.py
-├── ingest.py
-├── retriever.py
-├── query.py
-├── config.py
-├── app.py
-├── requirements.txt
-└── README.md
 
 ## Setup
 
