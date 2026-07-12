@@ -3,6 +3,7 @@ import type { Driver, DriverStatus } from '../types'
 import { isLicenseExpired, useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
+import ExportButtons from '../components/ExportButtons'
 import { Search, Plus, Edit2, Trash2, ShieldAlert, Calendar, Phone, Star } from 'lucide-react'
 
 const emptyForm = {
@@ -109,12 +110,18 @@ export default function Drivers() {
         title="Driver Management"
         subtitle="Track active operator registration, safety rankings, and compliance statuses."
         action={
-          canEdit && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportButtons
+              filename="driver-registry"
+              title="Driver Management"
+              headers={['Name', 'License No.', 'Category', 'License Expiry', 'Contact', 'Safety Score (%)', 'Status']}
+              rows={filtered.map((d) => [d.name, d.licenseNumber, d.licenseCategory, d.licenseExpiry, d.contact, d.safetyScore, d.status])}
+            />
             <Button onClick={openCreate} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               <span>Add Driver</span>
             </Button>
-          )
+          </div>
         }
       />
 

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import type { ExpenseCategory } from '../types'
 import { useData } from '../context/DataContext'
-import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, inputClass } from '../components/ui'
+import ExportButtons from '../components/ExportButtons'
 import { Fuel, Receipt, Truck, Layers } from 'lucide-react'
 
 const categories: ExpenseCategory[] = ['Toll', 'Maintenance', 'Insurance', 'Fine', 'Other']
@@ -13,9 +13,7 @@ const emptyExpenseForm = { vehicleId: '', category: 'Toll' as ExpenseCategory, a
 
 export default function Expenses() {
   const { vehicles, fuelLogs, expenses, addFuelLog, addExpense } = useData()
-  const { hasRole } = useAuth()
   const { formatMoney } = useSettings()
-  const canEdit = hasRole('Fleet Manager', 'Financial Analyst')
 
   const [fuelModalOpen, setFuelModalOpen] = useState(false)
   const [fuelForm, setFuelForm] = useState(emptyFuelForm)
@@ -91,18 +89,16 @@ export default function Expenses() {
         title="Fuel & Cost Logs"
         subtitle="Manage regular expenses and fuel top-ups to maintain precise operational ROI stats."
         action={
-          canEdit && (
-            <div className="flex gap-2">
-              <Button variant="secondary" onClick={openFuelModal} className="flex items-center gap-1.5">
-                <Fuel className="h-4 w-4 text-indigo-600" />
-                <span>Log Fuel</span>
-              </Button>
-              <Button onClick={openExpenseModal} className="flex items-center gap-1.5">
-                <Receipt className="h-4 w-4" />
-                <span>Log Expense</span>
-              </Button>
-            </div>
-          )
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={openFuelModal} className="flex items-center gap-1.5">
+              <Fuel className="h-4 w-4 text-indigo-600" />
+              <span>Log Fuel</span>
+            </Button>
+            <Button onClick={openExpenseModal} className="flex items-center gap-1.5">
+              <Receipt className="h-4 w-4" />
+              <span>Log Expense</span>
+            </Button>
+          </div>
         }
       />
 
@@ -159,7 +155,13 @@ export default function Expenses() {
               <Fuel className="h-4 w-4 text-indigo-600" />
               <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">Recent Fuel Logs</h2>
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Odometer Linked</span>
+            <ExportButtons
+              compact
+              filename="fuel-logs"
+              title="Fuel Logs"
+              headers={['Vehicle', 'Volume (L)', 'Cost', 'Date']}
+              rows={sortedFuel.map((f) => [vehicleLabel(f.vehicleId), f.liters, f.cost, f.date])}
+            />
           </div>
 
           {sortedFuel.length === 0 ? (
@@ -199,7 +201,13 @@ export default function Expenses() {
               <Receipt className="h-4 w-4 text-indigo-600" />
               <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">Other Expenses Logs</h2>
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tolls & Fines</span>
+            <ExportButtons
+              compact
+              filename="expense-logs"
+              title="Expense Logs"
+              headers={['Vehicle', 'Category', 'Amount', 'Date', 'Notes']}
+              rows={sortedExpenses.map((e) => [vehicleLabel(e.vehicleId), e.category, e.amount, e.date, e.notes ?? ''])}
+            />
           </div>
 
           {sortedExpenses.length === 0 ? (

@@ -28,7 +28,7 @@ export default function App() {
               <Route path="/maintenance" element={<ProtectedRoute page="maintenance"><Maintenance /></ProtectedRoute>} />
               <Route path="/expenses" element={<ProtectedRoute page="expenses"><Expenses /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute page="reports"><Reports /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute managerOnly><Settings /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

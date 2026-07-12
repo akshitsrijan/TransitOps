@@ -52,8 +52,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   permissions: {
     'Fleet Manager': [...ALL_PAGE_KEYS],
     Driver: ['dashboard', 'vehicles', 'trips'],
-    'Safety Officer': ['dashboard', 'drivers', 'trips', 'maintenance'],
-    'Financial Analyst': ['dashboard', 'expenses', 'reports', 'maintenance'],
+    'Safety Officer': ['dashboard', 'vehicles', 'drivers', 'trips', 'maintenance'],
+    'Financial Analyst': ['dashboard', 'vehicles', 'expenses', 'reports', 'maintenance'],
   },
   depots: ['North', 'South', 'East', 'West'],
   currency: 'USD',

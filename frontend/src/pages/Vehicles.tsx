@@ -4,6 +4,7 @@ import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
+import ExportButtons from '../components/ExportButtons'
 import { Search, Plus, Edit2, Trash2, ShieldAlert, MapPin, Layers } from 'lucide-react'
 
 const emptyForm = {
@@ -110,12 +111,18 @@ export default function Vehicles() {
         title="Vehicle Registry"
         subtitle="Manage fleet load parameters, regions, and active dispatch availability."
         action={
-          canEdit && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportButtons
+              filename="vehicle-registry"
+              title="Vehicle Registry"
+              headers={['Registration', 'Model', 'Type', 'Max Capacity (kg)', 'Odometer (km)', 'Acquisition Cost', 'Status', 'Region']}
+              rows={filtered.map((v) => [v.registrationNumber, v.model, v.type, v.maxLoadCapacityKg, v.odometerKm, v.acquisitionCost, v.status, v.region])}
+            />
             <Button onClick={openCreate} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               <span>Add Vehicle</span>
             </Button>
-          )
+          </div>
         }
       />
 

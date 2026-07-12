@@ -79,10 +79,12 @@ export default function Settings() {
         title="Settings"
         subtitle="Configure role privileges, depots, and regional display preferences."
         action={
-          <Button variant="secondary" onClick={resetSettings}>
-            <RotateCcw className="h-4 w-4" />
-            Reset to Defaults
-          </Button>
+          isManager && (
+            <Button variant="secondary" onClick={resetSettings}>
+              <RotateCcw className="h-4 w-4" />
+              Reset to Defaults
+            </Button>
+          )
         }
       />
 
@@ -161,7 +163,7 @@ export default function Settings() {
                   key={depot}
                   className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-2.5"
                 >
-                  {editingDepot === depot ? (
+                  {isManager && editingDepot === depot ? (
                     <div className="flex flex-1 items-center gap-2">
                       <input
                         value={editValue}
@@ -196,46 +198,50 @@ export default function Settings() {
                           {vehiclesInDepot(depot)} vehicle{vehiclesInDepot(depot) === 1 ? '' : 's'}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => {
-                            setEditingDepot(depot)
-                            setEditValue(depot)
-                          }}
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                          aria-label={`Rename ${depot}`}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => removeDepot(depot)}
-                          disabled={vehiclesInDepot(depot) > 0}
-                          title={vehiclesInDepot(depot) > 0 ? 'Reassign its vehicles first' : 'Remove depot'}
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                          aria-label={`Remove ${depot}`}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                      {isManager && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => {
+                              setEditingDepot(depot)
+                              setEditValue(depot)
+                            }}
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                            aria-label={`Rename ${depot}`}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => removeDepot(depot)}
+                            disabled={vehiclesInDepot(depot) > 0}
+                            title={vehiclesInDepot(depot) > 0 ? 'Reassign its vehicles first' : 'Remove depot'}
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                            aria-label={`Remove ${depot}`}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 flex gap-2">
-              <input
-                value={newDepot}
-                onChange={(e) => setNewDepot(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addDepot()}
-                placeholder="New depot name (e.g. Central)"
-                className={inputClass}
-              />
-              <Button onClick={addDepot} disabled={!newDepot.trim()}>
-                <Plus className="h-4 w-4" />
-                Add
-              </Button>
-            </div>
+            {isManager && (
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={newDepot}
+                  onChange={(e) => setNewDepot(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addDepot()}
+                  placeholder="New depot name (e.g. Central)"
+                  className={inputClass}
+                />
+                <Button onClick={addDepot} disabled={!newDepot.trim()}>
+                  <Plus className="h-4 w-4" />
+                  Add
+                </Button>
+              </div>
+            )}
           </Card>
 
           {/* ── Regional Preferences ──────────────────────────────── */}
@@ -253,7 +259,8 @@ export default function Settings() {
                 <select
                   value={settings.currency}
                   onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                  className={inputClass}
+                  disabled={!isManager}
+                  className={`${inputClass} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -273,10 +280,11 @@ export default function Settings() {
                     <button
                       key={unit}
                       onClick={() => setDistanceUnit(unit)}
-                      className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-bold transition-all ${
+                      disabled={!isManager}
+                      className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-bold transition-all disabled:cursor-not-allowed ${
                         settings.distanceUnit === unit
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
-                          : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700'
+                          : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700 disabled:opacity-50 disabled:hover:border-slate-200 disabled:hover:text-slate-500'
                       }`}
                     >
                       {unit === 'km' ? 'Kilometers (km)' : 'Miles (mi)'}

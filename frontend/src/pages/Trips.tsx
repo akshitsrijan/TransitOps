@@ -4,6 +4,7 @@ import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
+import ExportButtons from '../components/ExportButtons'
 import {
   Truck,
   Scale,
@@ -134,12 +135,29 @@ export default function Trips() {
         title="Trip Management"
         subtitle="Manage dispatch states, track active routes, and complete operational cargo delivery lifecycles."
         action={
-          canEdit && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportButtons
+              filename="trip-registry"
+              title="Trip Management"
+              headers={['Manifest ID', 'Source', 'Destination', 'Vehicle', 'Driver', 'Cargo (kg)', 'Planned (km)', 'Actual (km)', 'Fuel (L)', 'Status']}
+              rows={sorted.map((t) => [
+                t.id,
+                t.source,
+                t.destination,
+                vehicleLabel(t.vehicleId),
+                driverLabel(t.driverId),
+                t.cargoWeightKg,
+                t.plannedDistanceKm,
+                t.actualDistanceKm ?? '-',
+                t.fuelConsumedLiters ?? '-',
+                t.status,
+              ])}
+            />
             <Button onClick={openCreate} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               <span>Create Trip</span>
             </Button>
-          )
+          </div>
         }
       />
 

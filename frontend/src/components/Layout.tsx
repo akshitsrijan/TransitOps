@@ -29,7 +29,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { canAccess } = useSettings()
 
   const visibleItems = navItems.filter((item) => canAccess(user?.role, item.page))
-  const isManager = user?.role === 'Fleet Manager'
 
   // Get initials for profile avatar
   const getInitials = (name?: string) => {
@@ -83,22 +82,19 @@ export default function Layout({ children }: { children: ReactNode }) {
             )
           })}
 
-          {/* Settings — Fleet Manager only */}
-          {isManager && (
-            <NavLink
-              to="/settings"
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-                  isActive
-                    ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-600 pl-3'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-                }`
-              }
-            >
-              <SettingsIcon className="h-4 w-4 shrink-0" />
-              <span>Settings</span>
-            </NavLink>
-          )}
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                isActive
+                  ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-600 pl-3'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+              }`
+            }
+          >
+            <SettingsIcon className="h-4 w-4 shrink-0" />
+            <span>Settings</span>
+          </NavLink>
         </nav>
 
         {/* User Card Profile Footer */}

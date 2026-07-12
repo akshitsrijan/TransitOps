@@ -3,6 +3,7 @@ import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
+import ExportButtons from '../components/ExportButtons'
 import { Wrench, Plus, Calendar, ShieldAlert, Truck, ShieldCheck } from 'lucide-react'
 
 const emptyForm = { vehicleId: '', description: '', cost: '' }
@@ -61,12 +62,25 @@ export default function Maintenance() {
         title="Fleet Maintenance Logs"
         subtitle="Track scheduled inspections, shop reports, and active compliance repairs."
         action={
-          canEdit && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportButtons
+              filename="maintenance-logs"
+              title="Fleet Maintenance Logs"
+              headers={['Vehicle', 'Description', 'Cost', 'Opened', 'Closed', 'Status']}
+              rows={sorted.map((m) => [
+                vehicleLabel(m.vehicleId),
+                m.description,
+                m.cost,
+                new Date(m.openedAt).toLocaleDateString(),
+                m.closedAt ? new Date(m.closedAt).toLocaleDateString() : '-',
+                m.status,
+              ])}
+            />
             <Button onClick={openCreate} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               <span>Log Maintenance</span>
             </Button>
-          )
+          </div>
         }
       />
 
