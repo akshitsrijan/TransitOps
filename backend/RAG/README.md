@@ -16,7 +16,7 @@ contract for retrieval requests/responses.
 
 ## Why retrieval-only
 
-- **No hallucination surface.** There's no generation step inside this service, so
+- **No generative hallucination surface.** There's no generation step inside this service, so
   there's nothing here that can fabricate an answer. Every response is a set of
   retrieved, sourced, threshold-filtered chunks — not synthesized text.
 - **Composable.** Any downstream system — an LLM, a rules engine, a human reviewing
@@ -44,20 +44,20 @@ contract for retrieval requests/responses.
                            │ similarity search (top-k, threshold-filtered)
                            ▼
                 ┌─────────────────────┐
-                │      Retriever       │   Grounded, cited context
-                │  (this repo's job)   │   — no generation performed here
+                │      Retriever      │   Grounded, cited context
+                │  (this repo's job)  │   — no generation performed here
                 └──────────┬──────────┘
                            │
                            ▼
                 ┌─────────────────────┐
-                │   API response       │   Ranked chunks + source citations
-                │   (JSON, structured) │
+                │   API response      │   Ranked chunks + source citations
+                │   (JSON, structured)│
                 └──────────┬──────────┘
                            │  optional, external, caller's choice
                            ▼
                 ┌─────────────────────┐
-                │  Any LLM / consumer  │   Not part of this repo.
-                │  (pluggable, or none)│   Can be swapped or omitted entirely.
+                │  Any LLM / consumer │   Not part of this repo.
+                │ (pluggable, or none)│   Can be swapped or omitted entirely.
                 └─────────────────────┘
 
 MySQL ── SQLAlchemy ── operational data (routes, drivers, vehicles, etc.)
@@ -71,41 +71,24 @@ This is the entire hallucination-prevention mechanism: since this service never
 generates text, it structurally cannot invent an answer. There is no prompt to
 harden, no generation temperature to tune, no drift to monitor.
 
-## Folder structure
 
-```
-transitops-rag/
-├── app/
-│   ├── config.py              # pydantic-settings, single source of truth for env vars
-│   ├── main.py                # FastAPI app entrypoint (not yet generated)
-│   ├── api/
-│   │   └── routes/            # FastAPI routers (e.g. /query, /health)
-│   ├── core/
-│   │   ├── chunking.py        # markdown-aware chunking logic
-│   │   ├── embeddings.py      # sentence-transformers wrapper
-│   │   └── retriever.py       # ChromaDB query + threshold filtering + citation assembly
-│   ├── db/
-│   │   ├── mysql.py           # SQLAlchemy engine/session
-│   │   └── models.py          # ORM models for operational data (read-mostly)
-│   ├── ingestion/
-│   │   └── loader.py          # reads knowledge_base/*.md, feeds chunking → embeddings
-│   └── schemas/
-│       └── query.py           # Pydantic request/response models (chunks + citations, no "answer" field)
-├── knowledge_base/            # source Markdown documents (16 files currently)
-├── chroma_db/                 # persisted vector store (gitignored)
-├── scripts/
-│   └── ingest.py              # one-off / re-run ingestion script
-├── tests/
-├── .env.example
-├── .env                       # not committed
-├── requirements.txt
-└── README.md
-```
 
 Note there is no `core/llm.py` and no `LLM_*` module in this structure — that was
 deliberately removed, not just left unimplemented. If a generation layer is ever
 added back, it belongs in a separate service that consumes this API, not inside
 this repo.
+##PROJECT STRUCTURE
+RAG/
+
+├── knowledge_base/
+├── database.py
+├── ingest.py
+├── retriever.py
+├── query.py
+├── config.py
+├── app.py
+├── requirements.txt
+└── README.md
 
 ## Setup
 
