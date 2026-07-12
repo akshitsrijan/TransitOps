@@ -11,20 +11,20 @@ MySQL (operational data) and, eventually, a shared API contract.
 
 ```
                 ┌─────────────────────┐
-                │  knowledge_base/     │   Markdown source documents
-                │  (*.md)              │
-                └──────────┬───────────┘
+                │  knowledge_base/    │   Markdown source documents
+                │  (*.md)             │
+                └──────────┬──────────┘
                            │ ingestion (chunk + embed)
                            ▼
                 ┌─────────────────────┐
-                │      ChromaDB        │   Vector store (persisted)
-                └──────────┬───────────┘
+                │      ChromaDB       │   Vector store (persisted)
+                └──────────┬──────────┘
                            │ similarity search (top-k, threshold-filtered)
                            ▼
                 ┌─────────────────────┐        ┌─────────────────────┐
-                │   Retriever (70%)    │───────▶│   LLM Summarizer     │
-                │  grounded context     │        │        (30%)         │
-                └─────────────────────┘        └──────────┬───────────┘
+                │   Retriever (70%)   │───────▶│   LLM Summarizer    │
+                │  grounded context   │        │        (30%)        │
+                └─────────────────────┘        └──────────┬──────────┘
                                                              │
                                                              ▼
                                                    FastAPI response
