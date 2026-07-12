@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# RAG vector store (regenerated from the corpus on first run)
+chroma_db/
