@@ -665,7 +665,7 @@ export default function Login() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-slate-800">Mithil Kokane</p>
-                        <p className="text-xs text-slate-500">mithilrkokane@gmail.com</p>
+                        <p className="text-xs text-slate-500">mithilrk14@gmail.com</p>
                       </div>
                     </button>
 
