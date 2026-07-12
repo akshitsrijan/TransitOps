@@ -23,8 +23,8 @@ This database acts as the **single source of truth** for the application.
                              │
                              ▼
                 ┌─────────────────────────┐
-                │     FastAPI Backend      │
-                │ (CRUD + Business Logic)  │
+                │     FastAPI Backend     │
+                │ (CRUD + Business Logic) │
                 └────────────┬────────────┘
                              │
            ┌─────────────────┴─────────────────┐
