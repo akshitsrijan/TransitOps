@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { Role, User } from '../types'
 import { seedUsers } from '../data/seed'
 import { loadFromStorage, saveToStorage } from '../lib/storage'
+import { requestOtpEmail } from '../lib/api'
 
 const SESSION_KEY = 'transitops.session'
 const REGISTERED_USERS_KEY = 'transitops.registered_users'
@@ -22,7 +23,7 @@ interface AuthContextValue {
   logout: () => void
   hasRole: (...roles: Role[]) => boolean
   getUsers: () => User[]
-  sendOTP: (email: string) => { ok: true; code: string }
+  sendOTP: (email: string, name?: string) => Promise<{ ok: true; code: string; delivery: 'email' | 'sandbox' }>
   activeOTP: { email: string; code: string; expiresAt: number } | null
   simulatedEmail: SimulatedEmail | null
   clearSimulatedEmail: () => void
@@ -140,11 +141,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return !!user && roles.includes(user.role)
   }
 
-  function sendOTP(email: string) {
+  async function sendOTP(email: string, name = '') {
     const code = Math.floor(100000 + Math.random() * 900000).toString()
     const expiresAt = Date.now() + 5 * 60 * 1000 // 5 minutes
 
     setActiveOTP({ email, code, expiresAt })
+
+    // Try real delivery through the backend first. If SMTP isn't configured or
+    // the backend is unreachable, fall back to the on-screen sandbox email.
+    const result = await requestOtpEmail(email, code, name)
+    if (result.sent) {
+      setSimulatedEmail(null) // real email sent - never reveal the code on screen
+      return { ok: true as const, code, delivery: 'email' as const }
+    }
 
     const newEmail: SimulatedEmail = {
       to: email,
@@ -155,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setSimulatedEmail(newEmail)
-    return { ok: true as const, code }
+    return { ok: true as const, code, delivery: 'sandbox' as const }
   }
 
   function clearSimulatedEmail() {

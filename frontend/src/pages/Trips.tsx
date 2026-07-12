@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Trip, TripStatus } from '../types'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
 import {
   Truck,
@@ -36,6 +37,7 @@ export default function Trips() {
     cancelTrip
   } = useData()
   const { hasRole } = useAuth()
+  const { formatDistance } = useSettings()
   const canEdit = hasRole('Fleet Manager', 'Driver')
 
   const [statusFilter, setStatusFilter] = useState<'All' | TripStatus>('All')
@@ -233,7 +235,7 @@ export default function Trips() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="block font-bold text-slate-700 text-xs">
-                      {t.actualDistanceKm ? `${t.actualDistanceKm} km` : `${t.plannedDistanceKm} km`}
+                      {formatDistance(t.actualDistanceKm ?? t.plannedDistanceKm)}
                     </span>
                     <span className="block text-[9px] font-semibold text-slate-400 uppercase">
                       {t.actualDistanceKm ? 'Actual Logged' : 'Estimated Route'}

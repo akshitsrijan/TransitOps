@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
-import { Wrench, Plus, Calendar, DollarSign, ShieldAlert, Truck, ShieldCheck } from 'lucide-react'
+import { Wrench, Plus, Calendar, ShieldAlert, Truck, ShieldCheck } from 'lucide-react'
 
 const emptyForm = { vehicleId: '', description: '', cost: '' }
 
 export default function Maintenance() {
   const { maintenanceLogs, vehicles, addMaintenanceLog, closeMaintenanceLog } = useData()
   const { hasRole } = useAuth()
+  const { formatMoney } = useSettings()
   const canEdit = hasRole('Fleet Manager')
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -120,8 +122,7 @@ export default function Maintenance() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center text-xs font-bold text-slate-800">
-                      <DollarSign className="h-3.5 w-3.5 text-slate-400 -mr-0.5" />
-                      {m.cost.toLocaleString()}
+                      {formatMoney(m.cost)}
                     </span>
                   </td>
                   <td className="px-6 py-4">

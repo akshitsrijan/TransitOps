@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { ExpenseCategory } from '../types'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, inputClass } from '../components/ui'
 import { Fuel, Receipt, Truck, Layers } from 'lucide-react'
 
@@ -13,6 +14,7 @@ const emptyExpenseForm = { vehicleId: '', category: 'Toll' as ExpenseCategory, a
 export default function Expenses() {
   const { vehicles, fuelLogs, expenses, addFuelLog, addExpense } = useData()
   const { hasRole } = useAuth()
+  const { formatMoney } = useSettings()
   const canEdit = hasRole('Fleet Manager', 'Financial Analyst')
 
   const [fuelModalOpen, setFuelModalOpen] = useState(false)
@@ -132,13 +134,13 @@ export default function Expenses() {
                       </span>
                     </td>
                     <td className="py-4 pr-4 font-semibold text-slate-700 text-xs">
-                      ${c.fuel.toLocaleString()}
+                      {formatMoney(c.fuel)}
                     </td>
                     <td className="py-4 pr-4 font-semibold text-slate-700 text-xs">
-                      ${c.other.toLocaleString()}
+                      {formatMoney(c.other)}
                     </td>
                     <td className="py-4 pr-4 font-black text-slate-900 text-right text-xs">
-                      ${(c.fuel + c.other).toLocaleString()}
+                      {formatMoney(c.fuel + c.other)}
                     </td>
                   </tr>
                 )
@@ -180,7 +182,7 @@ export default function Expenses() {
                     <tr key={f.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-5 py-3.5 font-bold text-slate-800">{vehicleLabel(f.vehicleId)}</td>
                       <td className="px-5 py-3.5 font-semibold text-slate-600">{f.liters} L</td>
-                      <td className="px-5 py-3.5 font-extrabold text-slate-800">${f.cost}</td>
+                      <td className="px-5 py-3.5 font-extrabold text-slate-800">{formatMoney(f.cost)}</td>
                       <td className="px-5 py-3.5 text-right font-medium text-slate-400">{f.date}</td>
                     </tr>
                   ))}
@@ -229,7 +231,7 @@ export default function Expenses() {
                           {e.category}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 font-extrabold text-slate-800">${e.amount}</td>
+                      <td className="px-5 py-3.5 font-extrabold text-slate-800">{formatMoney(e.amount)}</td>
                       <td className="px-5 py-3.5 text-right font-medium text-slate-400">{e.date}</td>
                     </tr>
                   ))}

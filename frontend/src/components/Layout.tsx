@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useSettings, type PageKey } from '../context/SettingsContext'
 import {
   LayoutDashboard,
   Truck,
@@ -9,21 +10,26 @@ import {
   Wrench,
   Receipt,
   BarChart3,
+  Settings as SettingsIcon,
   LogOut
 } from 'lucide-react'
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/vehicles', label: 'Vehicles', icon: Truck },
-  { to: '/drivers', label: 'Drivers', icon: Users },
-  { to: '/trips', label: 'Trips', icon: MapPin },
-  { to: '/maintenance', label: 'Maintenance', icon: Wrench },
-  { to: '/expenses', label: 'Fuel & Expenses', icon: Receipt },
-  { to: '/reports', label: 'Reports', icon: BarChart3 },
+const navItems: { to: string; page: PageKey; label: string; icon: typeof Truck }[] = [
+  { to: '/dashboard', page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/vehicles', page: 'vehicles', label: 'Vehicles', icon: Truck },
+  { to: '/drivers', page: 'drivers', label: 'Drivers', icon: Users },
+  { to: '/trips', page: 'trips', label: 'Trips', icon: MapPin },
+  { to: '/maintenance', page: 'maintenance', label: 'Maintenance', icon: Wrench },
+  { to: '/expenses', page: 'expenses', label: 'Fuel & Expenses', icon: Receipt },
+  { to: '/reports', page: 'reports', label: 'Reports', icon: BarChart3 },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth()
+  const { canAccess } = useSettings()
+
+  const visibleItems = navItems.filter((item) => canAccess(user?.role, item.page))
+  const isManager = user?.role === 'Fleet Manager'
 
   // Get initials for profile avatar
   const getInitials = (name?: string) => {
@@ -57,7 +63,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         {/* Navigation Items */}
         <nav className="flex-1 space-y-1.5 px-4 py-6">
-          {navItems.map((item) => {
+          {visibleItems.map((item) => {
             const IconComponent = item.icon
             return (
               <NavLink
@@ -76,6 +82,23 @@ export default function Layout({ children }: { children: ReactNode }) {
               </NavLink>
             )
           })}
+
+          {/* Settings — Fleet Manager only */}
+          {isManager && (
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-600 pl-3'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                }`
+              }
+            >
+              <SettingsIcon className="h-4 w-4 shrink-0" />
+              <span>Settings</span>
+            </NavLink>
+          )}
         </nav>
 
         {/* User Card Profile Footer */}

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useData } from '../context/DataContext'
 import { ASSUMED_REVENUE_PER_KM } from '../context/DataContext'
+import { useSettings } from '../context/SettingsContext'
 import { computeVehicleReport, downloadCsv, toCsv } from '../lib/metrics'
 import { Button, Card, PageHeader } from '../components/ui'
 import {
@@ -17,6 +18,7 @@ import {
 
 export default function Reports() {
   const { vehicles, trips, maintenanceLogs, fuelLogs, expenses } = useData()
+  const { formatMoney, formatDistance } = useSettings()
 
   const rows = useMemo(
     () => computeVehicleReport(vehicles, trips, maintenanceLogs, fuelLogs, expenses),
@@ -96,7 +98,7 @@ export default function Reports() {
         <div>
           <p className="mb-1 uppercase tracking-wider text-[10px] text-indigo-500">Methodology Note</p>
           <p className="font-semibold text-indigo-900 leading-relaxed">
-            ROI metrics assume a standard revenue tier of ${ASSUMED_REVENUE_PER_KM.toFixed(2)}/km calculated on closed trip odometer distances. All fleet logs are consolidated in real-time.
+            ROI metrics assume a standard revenue tier of {formatMoney(ASSUMED_REVENUE_PER_KM)}/km calculated on closed trip odometer distances. All fleet logs are consolidated in real-time.
           </p>
         </div>
       </div>
@@ -106,7 +108,7 @@ export default function Reports() {
         <Card className="flex flex-col justify-between p-5 relative overflow-hidden group">
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Estimated Gross Revenue</p>
-            <p className="text-2xl font-black text-slate-900 mt-2 tracking-tight">${summary.totalRevenue.toLocaleString()}</p>
+            <p className="text-2xl font-black text-slate-900 mt-2 tracking-tight">{formatMoney(summary.totalRevenue, { compact: true })}</p>
           </div>
           <div className="absolute top-4 right-4 p-2.5 bg-slate-100 rounded-lg text-slate-600">
             <DollarSign className="h-4 w-4" />
@@ -116,7 +118,7 @@ export default function Reports() {
         <Card className="flex flex-col justify-between p-5 relative overflow-hidden group">
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Total Fleet Cost</p>
-            <p className="text-2xl font-black text-slate-900 mt-2 tracking-tight">${summary.totalCost.toLocaleString()}</p>
+            <p className="text-2xl font-black text-slate-900 mt-2 tracking-tight">{formatMoney(summary.totalCost, { compact: true })}</p>
           </div>
           <div className="absolute top-4 right-4 p-2.5 bg-slate-100 rounded-lg text-slate-600">
             <Activity className="h-4 w-4" />
@@ -127,7 +129,7 @@ export default function Reports() {
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Estimated Margin / Profit</p>
             <p className={`text-2xl font-black mt-2 tracking-tight ${summary.totalProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-              ${summary.totalProfit.toLocaleString()}
+              {formatMoney(summary.totalProfit, { compact: true })}
             </p>
           </div>
           <div className="absolute top-4 right-4 p-2.5 bg-slate-100 rounded-lg text-slate-600">
@@ -214,7 +216,7 @@ export default function Reports() {
                   <tr key={r.vehicleId} className="hover:bg-slate-50/30 transition-colors">
                     <td className="px-6 py-4 font-extrabold text-slate-900">{r.registrationNumber}</td>
                     <td className="px-6 py-4 font-semibold text-slate-700">{r.tripCount}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-700">{r.totalDistanceKm.toLocaleString()} km</td>
+                    <td className="px-6 py-4 font-semibold text-slate-700">{formatDistance(r.totalDistanceKm)}</td>
                     <td className="px-6 py-4">
                       {r.fuelEfficiencyKmPerL ? (
                         <div className="space-y-1">
@@ -230,9 +232,9 @@ export default function Reports() {
                         <span className="text-xs text-slate-400 font-semibold">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 font-semibold text-slate-700">${r.fuelCost.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-700">${r.maintenanceCost.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-extrabold text-slate-900">${r.operationalCost.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-700">{formatMoney(r.fuelCost)}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-700">{formatMoney(r.maintenanceCost)}</td>
+                    <td className="px-6 py-4 font-extrabold text-slate-900">{formatMoney(r.operationalCost)}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex flex-col items-end">
                         <span className={`font-black text-sm ${r.roiPct != null && r.roiPct < 0 ? 'text-red-600' : 'text-emerald-600'}`}>

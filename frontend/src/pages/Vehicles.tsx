@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Vehicle, VehicleStatus } from '../types'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { Button, Card, EmptyState, ErrorText, Field, Modal, PageHeader, StatusBadge, inputClass } from '../components/ui'
 import { Search, Plus, Edit2, Trash2, ShieldAlert, MapPin, Layers } from 'lucide-react'
 
@@ -19,6 +20,7 @@ const emptyForm = {
 export default function Vehicles() {
   const { vehicles, addVehicle, updateVehicle, deleteVehicle } = useData()
   const { hasRole } = useAuth()
+  const { settings, formatDistance } = useSettings()
   const canEdit = hasRole('Fleet Manager')
 
   const [search, setSearch] = useState('')
@@ -194,7 +196,7 @@ export default function Vehicles() {
                     {v.maxLoadCapacityKg.toLocaleString()} kg
                   </td>
                   <td className="px-6 py-4 font-semibold text-slate-700 text-xs">
-                    {v.odometerKm.toLocaleString()} km
+                    {formatDistance(v.odometerKm)}
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600">
@@ -247,8 +249,17 @@ export default function Vehicles() {
             <Field label="Vehicle Class/Type">
               <input className={inputClass} placeholder="e.g. Van, Truck" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} />
             </Field>
-            <Field label="Operating Territory/Region">
-              <input className={inputClass} placeholder="e.g. Northeast" value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} />
+            <Field label="Operating Depot/Region">
+              <select className={inputClass} value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
+                <option value="">Select a depot...</option>
+                {settings.depots.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+                {/* Keep a legacy region selectable when editing a vehicle whose depot was removed */}
+                {form.region && !settings.depots.includes(form.region) && (
+                  <option value={form.region}>{form.region} (legacy)</option>
+                )}
+              </select>
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-3.5">

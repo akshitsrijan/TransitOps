@@ -50,6 +50,7 @@ export default function Login() {
   const [otpCode, setOtpCode] = useState('')
   const [expectedCode, setExpectedCode] = useState('')
   const [otpCountdown, setOtpCountdown] = useState(0)
+  const [otpDelivery, setOtpDelivery] = useState<'email' | 'sandbox'>('sandbox')
 
   // Google Sign-In Simulation
   const [showGoogleModal, setShowGoogleModal] = useState(false)
@@ -89,7 +90,7 @@ export default function Login() {
   }
 
   // Request Registration OTP
-  function handleRequestOTP() {
+  async function handleRequestOTP() {
     if (!regName.trim()) {
       setError('Please enter your full name')
       return
@@ -106,15 +107,14 @@ export default function Login() {
     setError('')
     setLoading(true)
 
-    setTimeout(() => {
-      const otpRes = sendOTP(regEmail)
-      setLoading(false)
-      if (otpRes.ok) {
-        setExpectedCode(otpRes.code)
-        setOtpSent(true)
-        setOtpCountdown(30)
-      }
-    }, 800)
+    const otpRes = await sendOTP(regEmail, regName)
+    setLoading(false)
+    if (otpRes.ok) {
+      setExpectedCode(otpRes.code)
+      setOtpDelivery(otpRes.delivery)
+      setOtpSent(true)
+      setOtpCountdown(30)
+    }
   }
 
   // Complete Registration after OTP Verification
@@ -457,7 +457,11 @@ export default function Login() {
                     <ShieldCheck className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
                     <h3 className="text-sm font-semibold text-slate-900">Verify Your Identity</h3>
                     <p className="text-xs text-slate-600 mt-1">
-                      We have sent a 6-digit verification code to <span className="text-indigo-600 font-semibold">{regEmail}</span>. Please find this email in our sandbox at the bottom right.
+                      {otpDelivery === 'email' ? (
+                        <>We have sent a 6-digit verification code to your inbox at <span className="text-indigo-600 font-semibold">{regEmail}</span>. Check your email (and spam folder).</>
+                      ) : (
+                        <>We have sent a 6-digit verification code to <span className="text-indigo-600 font-semibold">{regEmail}</span>. Please find this email in our sandbox at the bottom right.</>
+                      )}
                     </p>
                   </div>
 
@@ -497,9 +501,13 @@ export default function Login() {
                     <button
                       type="button"
                       disabled={otpCountdown > 0 || loading}
-                      onClick={() => {
-                        sendOTP(regEmail)
+                      onClick={async () => {
                         setOtpCountdown(30)
+                        const res = await sendOTP(regEmail, regName)
+                        if (res.ok) {
+                          setExpectedCode(res.code)
+                          setOtpDelivery(res.delivery)
+                        }
                       }}
                       className="text-xs text-indigo-600 hover:text-indigo-800 disabled:opacity-40 disabled:no-underline font-medium"
                     >

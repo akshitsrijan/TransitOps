@@ -28,6 +28,18 @@ class LoginResponse(CamelModel):
     user: UserRead
 
 
+class SendOtpRequest(CamelModel):
+    email: str
+    code: str
+    name: str = ""
+
+
+class SendOtpResponse(CamelModel):
+    sent: bool
+    via: str  # "smtp" | "disabled" | "error"
+    detail: str = ""
+
+
 # ---------- Vehicles ----------
 class VehicleCreate(CamelModel):
     registration_number: str
