@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+
+# Generated at runtime: SQLite mock DB (auto-reseeds) + Chroma vector index
+# (rebuilt from TransitOps_RAG_Benchmark_Dataset/ on first startup)
+data/

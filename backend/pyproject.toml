@@ -1,0 +1,15 @@
+[project]
+name = "transitops-backend"
+version = "0.1.0"
+description = "TransitOps API: mock fleet-ops database + RAG-based confidence checking"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlmodel>=0.0.22",
+    "chromadb>=0.5",
+    "ollama>=0.4",
+    "pydantic-settings>=2.6",
+    "python-multipart>=0.0.12",
+    "rank-bm25>=0.2.2",
+]
