@@ -25,8 +25,8 @@ MySQL (operational data) and, eventually, a shared API contract.
                 │   Retriever (70%)   │───────▶│   LLM Summarizer    │
                 │  grounded context   │        │        (30%)        │
                 └─────────────────────┘        └──────────┬──────────┘
-                                                             │
-                                                             ▼
+                                                          │
+                                                          ▼
                                                    FastAPI response
                                                    (with source citations)
 
